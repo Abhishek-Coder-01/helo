@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PDF Compressor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-200">
+
+<div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md text-center">
+    <h1 class="text-2xl font-bold mb-6">📄 PDF Compressor</h1>
+
+    <form id="pdfForm" class="space-y-4">
+        <input type="file" name="pdf" accept="application/pdf"
+               class="w-full border-2 border-dashed rounded-xl p-4"
+               required>
+
+        <button class="w-full bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition">
+            Compress PDF
+        </button>
+    </form>
+
+    <p id="status" class="mt-4 text-sm text-gray-600"></p>
+</div>
+
+<script>
+document.getElementById("pdfForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const status = document.getElementById("status");
+    status.innerText = "⏳ Compressing PDF...";
+
+    const formData = new FormData(this);
+
+    const res = await fetch("/compress", {
+        method: "POST",
+        body: formData
+    });
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "compressed.pdf";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    status.innerText = "✅ PDF Compressed & Downloaded!";
+});
+</script>
+
+</body>
+</html>
